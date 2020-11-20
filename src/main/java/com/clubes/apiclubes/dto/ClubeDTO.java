@@ -1,64 +1,123 @@
 package com.clubes.apiclubes.dto;
+import com.clubes.apiclubes.entity.BaseBuilder;
+import com.clubes.apiclubes.entity.ClubeEntity;
 import lombok.*;
-import javax.validation.constraints.*;
+import org.springframework.stereotype.Component;
 
-@NoArgsConstructor
-@AllArgsConstructor
+import javax.persistence.Column;
+
 public class ClubeDTO {
-    @NotNull(message = "ID cannot be null")
-    @NotEmpty(message = "ID must be a valid number")
     private Long id;
-
-    @NotNull(message = "nome cannot be null")
-    @NotEmpty(message = "nome must be a valid number")
     private String nome;
-
-    @NotNull(message = "qtd_titulos_nacionais cannot be null")
-    @NotEmpty(message = "qtd_titulos_nacionais must be a valid number")
-    private int qtd_titulos_nacionais;
-
-    @NotNull(message = "qtd_titulos_internacionais cannot be null")
-    @NotEmpty(message = "qtd_titulos_internacionais must be a valid number")
-    private int qtd_titulos_internacionais;
-
-    @NotNull(message = "nome_treinador cannot be null")
-    @NotEmpty(message = "nome_treinador must be a valid number")
-    private String nome_treinador;
+    private int qtdTitulosNacionais;
+    private int qtdTitulosInternacionais;
+    private String nomeTreinador;
 
     public Long getId() {
         return id;
     }
-    public void setId(Long id) {
+    private void setId(Long id) {
         this.id = id;
     }
 
     public String getNome() {
         return nome;
     }
-    public void setNome(String nome) {
+    private void setNome(String nome) {
         this.nome = nome;
     }
 
-    public int getQtd_titulos_nacionais() {
-        return qtd_titulos_nacionais;
+    public Integer getQtdTitulosNacionais() {
+        return qtdTitulosNacionais;
     }
-    public void setQtd_titulos_nacionais(int qtd_titulos_nacionais) {
-        this.qtd_titulos_nacionais = qtd_titulos_nacionais;
-    }
-
-    public int getQtd_titulos_internacionais() {
-        return qtd_titulos_internacionais;
-    }
-    public void setQtd_titulos_internacionais(int qtd_titulos_internacionais) {
-        this.qtd_titulos_internacionais = qtd_titulos_internacionais;
+    private void setQtdTitulosNacionais(Integer qtdTitulosNacionais) {
+        this.qtdTitulosNacionais = qtdTitulosNacionais;
     }
 
-    public String getNome_treinador() {
-        return nome_treinador;
+    public Integer getQtdTitulosInternacionais() {
+        return qtdTitulosInternacionais;
     }
-    public void setNome_treinador(String nome_treinador) {
-        this.nome_treinador = nome_treinador;
+    private void setQtdTitulosInternacionais(Integer qtdTitulosInternacionais) {
+        this.qtdTitulosInternacionais = qtdTitulosInternacionais;
     }
 
+    public String getNomeTreinador() {
+        return nomeTreinador;
+    }
+    private void setNomeTreinador(String nomeTreinador) {
+        this.nomeTreinador = nomeTreinador;
+    }
+
+    public static class Builder implements BaseBuilder<ClubeDTO> {
+
+        private ClubeDTO entity;
+
+        public Builder(ClubeDTO entity) {
+            this.entity = entity;
+        }
+
+        public static Builder create() {
+            return new Builder(new ClubeDTO());
+        }
+
+        public static Builder from(ClubeDTO entity) {
+            return new Builder(entity);
+        }
+
+        public Builder id(Long id) {
+            this.entity.setId(id);
+            return this;
+        }
+
+        public Builder nome(String nome) {
+            this.entity.setNome(nome);
+            return this;
+        }
+
+        public Builder qtdTitulosNacionais(Integer qtdTitulosN) {
+            this.entity.setQtdTitulosNacionais(qtdTitulosN);
+            return this;
+        }
+
+        public Builder qtdTitulosInternacionais(Integer qtdTitulosI) {
+            this.entity.setQtdTitulosInternacionais(qtdTitulosI);
+            return this;
+        }
+
+        public Builder nomeTreinador(String nomeTreinador) {
+            this.entity.setNomeTreinador(nomeTreinador);
+            return this;
+        }
+
+        @Override
+        public ClubeDTO build() {
+            return this.entity;
+        }
+    }
+
+    @Component
+    public static class RepresentationBuilder implements BaseRepresentationBuilder<ClubeEntity, ClubeDTO, ClubeEntity.Builder> {
+
+        @Override
+        public ClubeDTO toRepresentation(ClubeEntity entity) {
+            return ClubeDTO.Builder.create()
+                    .id(entity.getId())
+                    .nome(entity.getNome())
+                    .qtdTitulosNacionais(entity.getQtdTitulosNacionais())
+                    .qtdTitulosInternacionais(entity.getQtdTitulosInternacionais())
+                    .nomeTreinador(entity.getNomeTreinador())
+                    .build();
+        }
+
+        @Override
+        public ClubeEntity fromRepresentation(ClubeDTO representation, ClubeEntity.Builder builder) {
+            return builder
+                    .nome(representation.getNome())
+                    .qtdTitulosNacionais(representation.getQtdTitulosNacionais())
+                    .qtdTitulosInternacionais(representation.getQtdTitulosInternacionais())
+                    .nomeTreinador(representation.getNomeTreinador())
+                    .build();
+        }
+    }
 
 }
