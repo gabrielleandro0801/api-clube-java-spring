@@ -3,28 +3,31 @@ package com.clubes.apiclubes.resource;
 import com.clubes.apiclubes.dto.ClubeDTO;
 import com.clubes.apiclubes.entity.ClubeEntity;
 import com.clubes.apiclubes.repository.ClubeRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@Slf4j
 @RequestMapping("/clube")
 public class ClubeResource {
-    @Autowired
-    private final ClubeRepository clubeRepository;
-    private final ClubeDTO.RepresentationBuilder clubeRB;
 
-    public ClubeResource(ClubeRepository clubeRepository, ClubeDTO.RepresentationBuilder clubeRB) {
-        this.clubeRepository = clubeRepository;
-        this.clubeRB = clubeRB;
-    }
+    @Autowired
+    private ClubeRepository clubeRepository;
 
     @PostMapping("/")
     public void adicionaClube(@RequestBody ClubeDTO clubeDTO){
-        ClubeEntity clubeFromRepresentation = clubeRB.fromRepresentation(clubeDTO, ClubeEntity.Builder.create());
+        ClubeEntity clubeEntity = ClubeEntity.builder()
+                .nome(clubeDTO.getNome())
+                .nomeTreinador(clubeDTO.getNomeTreinador())
+                .qtdTitulosNacionais(clubeDTO.getQtdTitulosNacionais())
+                .qtdTitulosInternacionais(clubeDTO.getQtdTitulosInternacionais())
+                .build();
 
         try{
-            clubeRepository.save(clubeFromRepresentation);
+            clubeRepository.save(clubeEntity);
         }catch (Exception e){
             System.out.println("Erro ao inserir clube!");
         }
@@ -32,9 +35,22 @@ public class ClubeResource {
 
     @GetMapping("/{id}")
     public ResponseEntity<ClubeDTO> buscaClubePorId(@PathVariable("id") Long id){
-        ClubeEntity clubeEntity = clubeRepository.getOne(id);
-        ClubeDTO clubeDTO = clubeRB.toRepresentation(clubeEntity);
-        return ResponseEntity.ok(clubeDTO);
+
+        try{
+            ClubeEntity clubeEntity = clubeRepository.getOne(id);
+
+            ClubeDTO clubeDTO = ClubeDTO.builder()
+                    .id(clubeEntity.getId())
+                    .nome(clubeEntity.getNome())
+                    .nomeTreinador(clubeEntity.getNomeTreinador())
+                    .qtdTitulosNacionais(clubeEntity.getQtdTitulosNacionais())
+                    .qtdTitulosInternacionais(clubeEntity.getQtdTitulosInternacionais())
+                    .build();
+
+            return ResponseEntity.ok(clubeDTO);
+        }catch(Exception e){
+            return null;
+        }
 
     }
 }
